@@ -1,0 +1,2 @@
+include ':app', ':dynamicfeature', ':common', ':settings', ':network'
+rootProject.name='MultimoduleTests'

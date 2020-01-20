@@ -1,0 +1,59 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply from: '../dependencies.gradle'
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
+
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$sdkVersions.kotlin"
+    api 'androidx.appcompat:appcompat:1.1.0'
+    api 'androidx.core:core-ktx:1.1.0'
+
+    api "com.github.moxy-community:moxy:$sdkVersions.moxy"
+
+    implementation "com.google.dagger:dagger:$sdkVersions.dagger"
+    kapt "com.google.dagger:dagger-compiler:$sdkVersions.dagger"
+
+    implementation "com.google.dagger:dagger-android:$sdkVersions.dagger"
+    implementation "com.google.dagger:dagger-android-support:$sdkVersions.dagger" // if you use the support libraries
+    kapt "com.google.dagger:dagger-android-processor:$sdkVersions.dagger"
+
+
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$sdkVersions.coroutines"
+
+    api "ru.terrakok.cicerone:cicerone:$sdkVersions.cicerone"
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+}
