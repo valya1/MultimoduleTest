@@ -3,17 +3,20 @@ package ru.napoleonit.common.ui
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import dagger.android.support.AndroidSupportInjection
 import ru.napoleonit.common.R
-import ru.napoleonit.common.presentation.LocalCiceronesHolder
+import ru.napoleonit.common.navigation.LocalCiceronesHolder
 import ru.terrakok.cicerone.Navigator
 import ru.terrakok.cicerone.NavigatorHolder
 import ru.terrakok.cicerone.Router
 import ru.terrakok.cicerone.android.support.SupportAppNavigator
 import ru.terrakok.cicerone.android.support.SupportAppScreen
+import ru.terrakok.cicerone.commands.Command
 import javax.inject.Inject
 
 abstract class ContainerFragment : BaseFragment(), HasAndroidInjector {
@@ -48,7 +51,7 @@ abstract class ContainerFragment : BaseFragment(), HasAndroidInjector {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        navigator = SupportAppNavigator(
+        navigator =SupportAppNavigator(
             activity,
             childFragmentManager,
             R.id.llFragmentContainer

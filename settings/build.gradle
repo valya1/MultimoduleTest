@@ -35,6 +35,11 @@ dependencies {
     api 'androidx.core:core-ktx:1.1.0'
     implementation "androidx.fragment:fragment-ktx:$sdkVersions.fragmentKtx"
     implementation "androidx.recyclerview:recyclerview:$sdkVersions.recyclerView"
+    implementation "androidx.viewpager2:viewpager2:$sdkVersions.viewpager2"
+
+    implementation "com.github.bumptech.glide:glide:$sdkVersions.glide"
+    kapt "com.github.bumptech.glide:compiler:$sdkVersions.glide"
+
 
     implementation "com.google.dagger:dagger:$sdkVersions.dagger"
     kapt "com.google.dagger:dagger-compiler:$sdkVersions.dagger"

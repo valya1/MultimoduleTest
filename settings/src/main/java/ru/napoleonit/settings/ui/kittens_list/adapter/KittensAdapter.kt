@@ -8,13 +8,16 @@ import android.widget.ImageView
 import androidx.annotation.LayoutRes
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.fragment_kitten_details.view.*
+import kotlinx.android.synthetic.main.item_kitten.view.*
 import ru.napoleonit.settings.R
+import ru.napoleonit.settings.ui.KittensFragment
 
-class KittensAdapter(val kittenResourceClickListener: (View, Int) -> Unit) :
+class KittensAdapter(val kittenResourceClickListener: (View, String) -> Unit) :
     RecyclerView.Adapter<KittensAdapter.KittenViewHolder>() {
 
-    override fun getItemCount() = 3
+    override fun getItemCount() = 2
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): KittenViewHolder {
         return KittenViewHolder(parent.context.inflateView(R.layout.item_kitten, parent))
@@ -28,43 +31,15 @@ class KittensAdapter(val kittenResourceClickListener: (View, Int) -> Unit) :
 
         fun bind(position: Int) {
 
-            itemView.ivKitten.transitionName =
-                itemView.context.resources.getString(
-                    R.string.transition_name_kitten_recycler,
-                    position.toString()
-                )
+            val url = if (position == 0) KittensFragment.LINK else KittensFragment.LINK2
+            itemView.transitionName = url
 
-            val resource = when (position) {
-                0 -> R.drawable.kitten1
-                1 -> R.drawable.kitten2
-                2 -> R.drawable.kitten3
-                else -> -1
-            }
-
-            when (position) {
-                0 -> itemView.ivKitten.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        itemView.context,
-                        R.drawable.kitten1
-                    )
-                )
-                1 -> itemView.ivKitten.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        itemView.context,
-                        R.drawable.kitten2
-                    )
-                )
-                2 -> itemView.ivKitten.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        itemView.context,
-                        R.drawable.kitten3
-                    )
-                )
-
-            }
+            Glide.with(itemView)
+                .load(url)
+                .into(itemView as ImageView)
 
             itemView.setOnClickListener {
-                kittenResourceClickListener.invoke(itemView.ivKitten, resource)
+                kittenResourceClickListener.invoke(itemView.ivKitten, url)
             }
         }
     }

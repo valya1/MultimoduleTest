@@ -1,4 +1,4 @@
-package ru.napoleonit.common.presentation
+package ru.napoleonit.common.navigation
 
 import androidx.fragment.app.Fragment
 import ru.terrakok.cicerone.android.support.SupportAppScreen

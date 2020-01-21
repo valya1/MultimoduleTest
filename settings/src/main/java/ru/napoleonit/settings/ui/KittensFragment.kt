@@ -4,10 +4,13 @@ import android.os.Bundle
 import android.transition.*
 import android.view.View
 import androidx.core.app.SharedElementCallback
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.settings_fragment.*
 import ru.napoleonit.common.ui.BaseFragment
+import ru.napoleonit.common.ui.FragmentTransactionDelegate
 import ru.napoleonit.settings.R
 import ru.napoleonit.settings.dependency.SettingsDependencies
 import ru.napoleonit.settings.ui.kittens_list.adapter.KittensAdapter
@@ -26,6 +29,12 @@ class KittensFragment : BaseFragment() {
 
     override val layoutId = R.layout.settings_fragment
 
+    companion object {
+        const val LINK2 = "https://нашсамогон.рф/pictures/product/big/6866_big.jpg"
+        const val LINK =
+            "https://agro63.ru/wa-data/public/shop/products/90/49/4990/images/6030/6030.750.jpg"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         AndroidSupportInjection.inject(this)
@@ -35,34 +44,19 @@ class KittensFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        setExitSharedElementCallback(object : SharedElementCallback() {
-
-            override fun onMapSharedElements(
-                names: MutableList<String>,
-                sharedElements: MutableMap<String, View>
-            ) {
-                super.onMapSharedElements(names, sharedElements)
-
-//                sharedElements[names[0]] = rvKittens.findViewHolderForAdapterPosition(0)!!.itemView
-            }
-
-        })
-
-//        sharedElementReturnTransition = createTransition()
-//        exitTransition = Fade().apply { duration = 700 }
-
         kittensAdapter = KittensAdapter { imageView, resource ->
-            parentFragment?.childFragmentManager?.commit {
+            fragmentManager?.commit {
 
-                val detailsFragment = KittenDetailFragment.newInstance(resource)
+                //                setReorderingAllowed(true)
+
+                val detailsFragment = KittenDetailContainerFragment.newInstance(resource)
                     .apply {
                         sharedElementEnterTransition = createTransition()
-                        enterTransition = Fade().apply { duration = 700 }
+                        sharedElementReturnTransition = createTransition()
+                        enterTransition = Fade()
                     }
 
                 replace(R.id.llFragmentContainer, detailsFragment)
-//                setReorderingAllowed(true)
                 addSharedElement(imageView, resources.getString(R.string.transition_name_kitten))
                 addToBackStack(null)
             }
@@ -71,15 +65,21 @@ class KittensFragment : BaseFragment() {
         rvKittens.adapter = kittensAdapter
     }
 
+//    override fun prepareTransaction(fragmentTransaction: FragmentTransaction, nextFragment: Fragment) {
+//
+//        fragmentTransaction.addSharedElement()
+//
+//    }
+
 
     private fun createTransition(): Transition {
         return TransitionSet().apply {
             ordering = TransitionSet.ORDERING_TOGETHER
             duration = 1000
-            startDelay = 700
+//            startDelay = 700
             addTransition(ChangeBounds())
             addTransition(ChangeTransform())
-            addTransition(ChangeClipBounds())
+//            addTransition(ChangeClipBounds())
             addTransition(ChangeImageTransform())
         }
     }

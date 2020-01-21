@@ -1,44 +1,80 @@
 package ru.napoleonit.settings.ui
 
-import android.app.SharedElementCallback
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import androidx.annotation.DrawableRes
+import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import kotlinx.android.synthetic.main.fragment_kitten_details.*
-import ru.napoleonit.common.ui.BaseFragment
+import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
+import kotlinx.android.synthetic.main.layout_kitten_detail.*
 import ru.napoleonit.settings.R
 
-class KittenDetailFragment : BaseFragment() {
+class KittenDetailFragment : Fragment() {
+
 
     companion object {
-        fun newInstance(@DrawableRes kittenResource: Int): KittenDetailFragment {
+
+        const val ARGS = "args"
+
+        fun newInstance(url: String): KittenDetailFragment {
             return KittenDetailFragment().apply {
-                arguments = bundleOf("RESOURCE" to kittenResource)
+                arguments = bundleOf(ARGS to url)
             }
         }
     }
 
-    override val layoutId = R.layout.fragment_kitten_details
+    private val args by lazy {
+        arguments!!.getString(ARGS)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? = inflater.inflate(R.layout.layout_kitten_detail, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
 
+        ivKitten.transitionName = args
+
         btnBack.setOnClickListener {
-            fragmentManager?.popBackStack()
+            parentFragment?.fragmentManager?.popBackStack()
         }
 
-        setEnterSharedElementCallback(object : androidx.core.app.SharedElementCallback() {
+        Glide.with(view)
+            .load(args)
+            .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+            .addListener(object : RequestListener<Drawable> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    parentFragment?.startPostponedEnterTransition()
+                    return false
+                }
 
-            override fun onMapSharedElements(
-                names: MutableList<String>,
-                sharedElements: MutableMap<String, View>
-            ) {
-                super.onMapSharedElements(names, sharedElements)
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    dataSource: DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    if (args == KittensFragment.LINK2) parentFragment?.startPostponedEnterTransition()
+                    return false
+                }
+            })
+            .into(ivKitten)
 
-//                sharedElements[names[0]] = ivKitten
-            }
-        })
     }
 }
