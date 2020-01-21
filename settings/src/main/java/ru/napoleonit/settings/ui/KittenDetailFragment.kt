@@ -42,7 +42,6 @@ class KittenDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         ivKitten.transitionName = args
 
         btnBack.setOnClickListener {
@@ -70,7 +69,7 @@ class KittenDetailFragment : Fragment() {
                     dataSource: DataSource?,
                     isFirstResource: Boolean
                 ): Boolean {
-                    if (args == KittensFragment.LINK2) parentFragment?.startPostponedEnterTransition()
+                    parentFragment?.startPostponedEnterTransition()
                     return false
                 }
             })

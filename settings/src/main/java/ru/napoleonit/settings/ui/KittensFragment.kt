@@ -57,7 +57,7 @@ class KittensFragment : BaseFragment() {
                     }
 
                 replace(R.id.llFragmentContainer, detailsFragment)
-                addSharedElement(imageView, resources.getString(R.string.transition_name_kitten))
+                addSharedElement(imageView, resource)
                 addToBackStack(null)
             }
         }
