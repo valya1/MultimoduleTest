@@ -11,12 +11,15 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
 import kotlinx.android.synthetic.main.layout_kitten_detail.*
+import ru.napoleonit.common.di.InjectionFragment
+import ru.napoleonit.common.navigation.router.TransitionsRouter
 import ru.napoleonit.settings.R
+import javax.inject.Inject
 
-class KittenDetailFragment : Fragment() {
-
+class KittenDetailFragment : Fragment(), InjectionFragment {
 
     companion object {
 
@@ -28,6 +31,9 @@ class KittenDetailFragment : Fragment() {
             }
         }
     }
+
+    @Inject
+    lateinit var router: TransitionsRouter
 
     private val args by lazy {
         arguments!!.getString(ARGS)
@@ -45,11 +51,14 @@ class KittenDetailFragment : Fragment() {
         ivKitten.transitionName = args
 
         btnBack.setOnClickListener {
+            //            router.exit()
+            //
             parentFragment?.fragmentManager?.popBackStack()
         }
 
         Glide.with(view)
             .load(args)
+            .dontAnimate()
             .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
             .addListener(object : RequestListener<Drawable> {
                 override fun onLoadFailed(

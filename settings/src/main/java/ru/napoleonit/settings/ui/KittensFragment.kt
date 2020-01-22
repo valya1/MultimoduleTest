@@ -1,29 +1,36 @@
 package ru.napoleonit.settings.ui
 
+import android.app.SharedElementCallback
 import android.os.Bundle
-import android.transition.*
+import android.transition.AutoTransition
+import android.transition.Fade
+import android.transition.Transition
+import android.transition.TransitionSet
 import android.view.View
-import androidx.core.app.SharedElementCallback
-import androidx.fragment.app.Fragment
+import androidx.core.view.doOnLayout
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.settings_fragment.*
+import ru.napoleonit.common.navigation.router.TransitionsRouter
+import ru.napoleonit.common.navigation.toScreen
 import ru.napoleonit.common.ui.BaseFragment
-import ru.napoleonit.common.ui.FragmentTransactionDelegate
+import ru.napoleonit.common.ui.ExitTransitionHandler
 import ru.napoleonit.settings.R
 import ru.napoleonit.settings.dependency.SettingsDependencies
 import ru.napoleonit.settings.ui.kittens_list.adapter.KittensAdapter
 import ru.terrakok.cicerone.Router
+import java.util.*
 import javax.inject.Inject
 
-class KittensFragment : BaseFragment() {
+class KittensFragment : BaseFragment(), ExitTransitionHandler {
 
     @Inject
     lateinit var dependencies: SettingsDependencies
 
     @Inject
-    lateinit var localRouter: Router
+    lateinit var localRouter: TransitionsRouter
 
     lateinit var kittensAdapter: KittensAdapter
 
@@ -44,43 +51,61 @@ class KittensFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        kittensAdapter = KittensAdapter { imageView, resource ->
-            fragmentManager?.commit {
-
-                //                setReorderingAllowed(true)
-
-                val detailsFragment = KittenDetailContainerFragment.newInstance(resource)
-                    .apply {
-                        sharedElementEnterTransition = createTransition()
-                        sharedElementReturnTransition = createTransition()
-                        enterTransition = Fade()
-                    }
-
-                replace(R.id.llFragmentContainer, detailsFragment)
-                addSharedElement(imageView, resource)
-                addToBackStack(null)
+        setExitSharedElementCallback(object : androidx.core.app.SharedElementCallback() {
+            override fun onMapSharedElements(
+                names: MutableList<String>,
+                sharedElements: MutableMap<String, View>
+            ) {
+                super.onMapSharedElements(names, sharedElements)
+//                sharedElements[names[0]] = rvKittens.findViewHolderForAdapterPosition(0)!!.itemView
             }
-        }
+        })
 
+        kittensAdapter = KittensAdapter { imageView, resource ->
+
+            val fragment = KittenDetailContainerFragment.newInstance(resource).apply {
+                sharedElementEnterTransition = createTransition()
+                sharedElementReturnTransition = createTransition()
+            }
+
+            requireFragmentManager().beginTransaction()
+                .setReorderingAllowed(true)
+                .addSharedElement(imageView, resource)
+                .addToBackStack("test")
+                .replace(
+                    R.id.llFragmentContainer, fragment, "test"
+                )
+                .commit()
+//        }
+
+//            localRouter.navigateWithTransitions(
+//                KittenDetailContainerFragment.newInstance(resource).apply {
+//                    sharedElementEnterTransition = createTransition()
+//                    sharedElementReturnTransition = createTransition()
+//                }.toScreen(),
+//                mapOf(imageView to resource)
+//            )
+        }
         rvKittens.adapter = kittensAdapter
+
+        rvKittens.viewTreeObserver.addOnPreDrawListener {
+
+            startPostponedEnterTransition()
+            true
+        }
     }
 
-//    override fun prepareTransaction(fragmentTransaction: FragmentTransaction, nextFragment: Fragment) {
-//
-//        fragmentTransaction.addSharedElement()
-//
-//    }
-
+    override fun prepareExitTransitions(transaction: FragmentTransaction) = Unit
 
     private fun createTransition(): Transition {
         return TransitionSet().apply {
             ordering = TransitionSet.ORDERING_TOGETHER
             duration = 1000
-//            startDelay = 700
-            addTransition(ChangeBounds())
-            addTransition(ChangeTransform())
+            addTransition(AutoTransition())
+//            addTransition(ChangeBounds())
+//            addTransition(ChangeTransform())
 //            addTransition(ChangeClipBounds())
-            addTransition(ChangeImageTransform())
+//            addTransition(ChangeImageTransform())
         }
     }
 }

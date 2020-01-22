@@ -39,7 +39,7 @@ class KittensAdapter(val kittenResourceClickListener: (View, String) -> Unit) :
                 .into(itemView as ImageView)
 
             itemView.setOnClickListener {
-                kittenResourceClickListener.invoke(itemView.ivKitten, url)
+                kittenResourceClickListener.invoke(itemView, url)
             }
         }
     }

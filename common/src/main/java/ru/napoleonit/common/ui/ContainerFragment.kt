@@ -11,6 +11,8 @@ import dagger.android.HasAndroidInjector
 import dagger.android.support.AndroidSupportInjection
 import ru.napoleonit.common.R
 import ru.napoleonit.common.navigation.LocalCiceronesHolder
+import ru.napoleonit.common.navigation.command.ForwardWithSharedElements
+import ru.napoleonit.common.navigation.router.TransitionsRouter
 import ru.terrakok.cicerone.Navigator
 import ru.terrakok.cicerone.NavigatorHolder
 import ru.terrakok.cicerone.Router
@@ -31,7 +33,7 @@ abstract class ContainerFragment : BaseFragment(), HasAndroidInjector {
 
     private val key = this::class.java.simpleName
 
-    val router: Router by lazy {
+    val router: TransitionsRouter by lazy {
         localCiceronesHolder.getOrCreate(key).router
     }
 
@@ -51,11 +53,38 @@ abstract class ContainerFragment : BaseFragment(), HasAndroidInjector {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        navigator =SupportAppNavigator(
+        navigator = object : SupportAppNavigator(
             activity,
             childFragmentManager,
             R.id.llFragmentContainer
-        )
+        ) {
+
+            override fun setupFragmentTransaction(
+                command: Command,
+                currentFragment: Fragment?,
+                nextFragment: Fragment?,
+                fragmentTransaction: FragmentTransaction
+            ) {
+
+                val sharedElements =
+                    if (command is ForwardWithSharedElements) command.sharedElements else null
+
+                if (sharedElements != null)
+                    fragmentTransaction.run {
+                        setReorderingAllowed(true)
+                        sharedElements.forEach {
+                            addSharedElement(it.key, it.value)
+                        }
+                    }
+
+                (currentFragment as? ExitTransitionHandler)?.prepareExitTransitions(
+                    fragmentTransaction
+                )
+                (nextFragment as? EnterTransitionHandler)?.prepareEnterTransitions(
+                    fragmentTransaction
+                )
+            }
+        }
 
         router.navigateTo(firstScreen)
     }

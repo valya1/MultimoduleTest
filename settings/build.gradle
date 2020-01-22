@@ -33,6 +33,7 @@ dependencies {
 
     api 'androidx.appcompat:appcompat:1.1.0'
     api 'androidx.core:core-ktx:1.1.0'
+    implementation 'com.google.android.material:material:1.0.0'
     implementation "androidx.fragment:fragment-ktx:$sdkVersions.fragmentKtx"
     implementation "androidx.recyclerview:recyclerview:$sdkVersions.recyclerView"
     implementation "androidx.viewpager2:viewpager2:$sdkVersions.viewpager2"
